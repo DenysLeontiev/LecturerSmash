@@ -8,13 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 
-builder.Services.AddDbContext<AppDbContext>((options) =>
-{
-    string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? throw new ArgumentNullException("DataBase Connection String is null");
-
-    options.UseSqlite(connectionString);
-});
+builder.Services.RegisterDbContext(builder.Configuration);
 
 var app = builder.Build();
 
