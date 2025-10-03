@@ -9,5 +9,8 @@ public class Worker : BaseEntity
     public Guid PhotoId { get; set; }
     public Photo? Photo { get; set; } = null;
 
+    public uint NumberOfLikes { get; set; }
+    public uint NumberOfDislikes { get; set; }
+
     public ICollection<Department> Departments { get; set; } = new List<Department>();
 }
