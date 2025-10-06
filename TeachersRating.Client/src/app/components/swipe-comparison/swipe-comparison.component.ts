@@ -1,14 +1,9 @@
-import { Component, ElementRef, ViewChild, signal, computed, OnInit, DestroyRef, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild, signal, computed, OnInit, DestroyRef, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent, merge } from 'rxjs';
-
-interface ComparisonItem {
-  id: string;
-  imageUrl: string;
-  name: string;
-  description?: string;
-}
+import { ApiService } from '../../services/api.service';
+import { Worker } from '../../models/institute.model';
 
 @Component({
   selector: 'app-swipe-comparison',
@@ -21,40 +16,21 @@ export class SwipeComparisonComponent implements OnInit {
   @ViewChild('container', { static: true }) container!: ElementRef<HTMLDivElement>;
   
   private destroyRef = inject(DestroyRef);
+  private apiService = inject(ApiService);
   
-  // Demo data - replace with your actual data
-  protected demoItems: ComparisonItem[] = [
-    {
-      id: '1',
-      imageUrl: 'https://via.placeholder.com/400x600/3498db/ffffff?text=Teacher+A',
-      name: 'Dr. Smith',
-      description: 'Computer Science Professor'
-    },
-    {
-      id: '2',
-      imageUrl: 'https://via.placeholder.com/400x600/e74c3c/ffffff?text=Teacher+B',
-      name: 'Prof. Johnson',
-      description: 'Mathematics Professor'
-    },
-    {
-      id: '3',
-      imageUrl: 'https://via.placeholder.com/400x600/2ecc71/ffffff?text=Teacher+C',
-      name: 'Dr. Brown',
-      description: 'Physics Professor'
-    },
-    {
-      id: '4',
-      imageUrl: 'https://via.placeholder.com/400x600/f39c12/ffffff?text=Teacher+D',
-      name: 'Prof. Davis',
-      description: 'Chemistry Professor'
-    }
-  ];
-
-  currentPair = signal<ComparisonItem[]>([]);
-  currentIndex = signal(0);
+  // Input for department ID
+  departmentId = input.required<string>();
+  
+  // Current worker pair for comparison
+  currentPair = signal<Worker[]>([]);
+  currentWinner = signal<Worker | null>(null);
+  winnerPosition = signal<'left' | 'right' | null>(null);
   swipeOffset = signal(0);
   isAnimating = signal(false);
   swipeDirection = signal<'left' | 'right' | null>(null);
+  isLoading = signal(false);
+  error = signal<string>('');
+  comparisonCount = signal(0);
 
   // Touch/mouse tracking
   private startX = 0;
@@ -62,8 +38,7 @@ export class SwipeComparisonComponent implements OnInit {
   private animationFrameId: number | null = null;
 
   // Computed properties
-  canSwipe = computed(() => !this.isAnimating());
-  hasMorePairs = computed(() => this.currentIndex() < this.demoItems.length - 1);
+  canSwipe = computed(() => !this.isAnimating() && !this.isLoading());
   
   // Expose Math for template use
   protected readonly Math = Math;
@@ -85,13 +60,42 @@ export class SwipeComparisonComponent implements OnInit {
   }
 
   private loadNextPair() {
-    const index = this.currentIndex();
-    if (index < this.demoItems.length - 1) {
-      this.currentPair.set([
-        this.demoItems[index],
-        this.demoItems[index + 1]
-      ]);
-    }
+    this.isLoading.set(true);
+    this.error.set('');
+    
+    this.apiService.getTwoRandomWorkers(this.departmentId()).subscribe({
+      next: (workers) => {
+        if (workers.length === 2) {
+          // If we have a winner from previous round, keep them and replace the other
+          const winner = this.currentWinner();
+          const position = this.winnerPosition();
+          
+          if (winner && position) {
+            // Keep the winner and add one new worker
+            const newWorker = workers.find(w => w.id !== winner.id) || workers[0];
+            
+            if (position === 'right') {
+              // Winner was on right, keep them on right, new worker on left
+              this.currentPair.set([newWorker, winner]);
+            } else {
+              // Winner was on left, keep them on left, new worker on right
+              this.currentPair.set([winner, newWorker]);
+            }
+            this.currentWinner.set(null); // Reset winner
+            this.winnerPosition.set(null); // Reset position
+          } else {
+            // First comparison, set both workers
+            this.currentPair.set(workers);
+          }
+        }
+        this.isLoading.set(false);
+      },
+      error: (error) => {
+        this.error.set('Failed to load workers. Please try again.');
+        this.isLoading.set(false);
+        console.error('Error loading workers:', error);
+      }
+    });
   }
 
   private setupGestureHandling() {
@@ -190,10 +194,20 @@ export class SwipeComparisonComponent implements OnInit {
       const winner = direction === 'right' ? pair[1] : pair[0];
       const loser = direction === 'right' ? pair[0] : pair[1];
       
-      console.log(`Selected: ${winner.name}, Rejected: ${loser.name}`);
+      console.log(`Selected: ${winner.fullName}, Rejected: ${loser.fullName}`);
       
-      // Here you would typically make an API call to record the choice
-      // this.recordChoice(winner.id, loser.id);
+      // Set the winner to be kept for next round and remember their position
+      this.currentWinner.set(winner);
+      this.winnerPosition.set(direction === 'right' ? 'right' : 'left');
+      
+      // Record the choice (optional - implement this endpoint in your backend)
+      this.apiService.recordChoice(winner.id, loser.id).subscribe({
+        next: () => console.log('Choice recorded'),
+        error: (error) => console.log('Failed to record choice:', error)
+      });
+      
+      // Update comparison count
+      this.comparisonCount.update(count => count + 1);
     }
 
     // Animate out
@@ -206,18 +220,12 @@ export class SwipeComparisonComponent implements OnInit {
   }
 
   private nextPair() {
-    this.currentIndex.update(i => i + 2);
     this.swipeOffset.set(0);
     this.swipeDirection.set(null);
     this.isAnimating.set(false);
     
-    if (this.hasMorePairs()) {
-      this.loadNextPair();
-    } else {
-      // All comparisons done
-      console.log('All comparisons completed!');
-      this.currentPair.set([]);
-    }
+    // Load next pair (endless swiping)
+    this.loadNextPair();
   }
 
   private resetPosition() {
@@ -235,10 +243,12 @@ export class SwipeComparisonComponent implements OnInit {
   }
 
   restart() {
-    this.currentIndex.set(0);
     this.swipeOffset.set(0);
     this.swipeDirection.set(null);
     this.isAnimating.set(false);
+    this.currentWinner.set(null);
+    this.winnerPosition.set(null);
+    this.comparisonCount.set(0);
     this.loadNextPair();
   }
 }

@@ -1,0 +1,56 @@
+<div class="selection-container">
+  <div class="selection-form">
+    <h1>Choose Institute & Department</h1>
+    
+    @if (error()) {
+      <div class="error-message">
+        {{ error() }}
+      </div>
+    }
+
+    <div class="form-group">
+      <label for="institute">Institute:</label>
+      <select 
+        id="institute"
+        [value]="selectedInstituteId()"
+        (change)="onInstituteChange($any($event.target).value)"
+        [disabled]="isLoading()"
+        class="form-select"
+      >
+        <option value="">Select an institute...</option>
+        @for (institute of institutes(); track institute.id) {
+          <option [value]="institute.id">{{ institute.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="department">Department:</label>
+      <select 
+        id="department"
+        [value]="selectedDepartmentId()"
+        (change)="onDepartmentChange($any($event.target).value)"
+        [disabled]="isLoading() || !selectedInstituteId()"
+        class="form-select"
+      >
+        <option value="">Select a department...</option>
+        @for (department of departments(); track department.id) {
+          <option [value]="department.id">{{ department.name }}</option>
+        }
+      </select>
+    </div>
+
+    <button 
+      class="start-btn"
+      (click)="startComparison()"
+      [disabled]="!canStartComparison()"
+    >
+      @if (isLoading()) {
+        <span class="spinner"></span>
+        Loading...
+      } @else {
+        Start Comparison
+      }
+    </button>
+  </div>
+</div>

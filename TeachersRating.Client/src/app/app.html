@@ -1,1 +1,12 @@
-<router-outlet />
+@if (!selectedDepartmentId()) {
+  <app-selection-form (departmentSelected)="onDepartmentSelected($event)" />
+} @else {
+  <div class="comparison-container">
+    <div class="back-button-container">
+      <button class="back-btn" (click)="backToSelection()">
+        ← Back to Selection
+      </button>
+    </div>
+    <app-swipe-comparison [departmentId]="selectedDepartmentId()" />
+  </div>
+}
