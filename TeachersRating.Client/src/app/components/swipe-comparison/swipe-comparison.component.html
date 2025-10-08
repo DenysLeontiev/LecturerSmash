@@ -7,7 +7,7 @@
   } @else if (isLoading() && currentPair().length === 0) {
     <div class="loading-state">
       <div class="spinner"></div>
-      <p>Loading workers...</p>
+      <p>Завантажуємо викладачів...</p>
     </div>
   } @else if (currentPair().length === 2) {
     <div class="comparison-area">
@@ -22,6 +22,14 @@
           <div class="card-info">
             <h3 class="card-name">{{ currentPair()[0].fullName }}</h3>
             <p class="card-description">{{ currentPair()[0].position }}</p>
+            <div class="likes-container">
+              <div class="likes-count">
+                <svg class="heart-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span class="likes-number">{{ currentPair()[0].numberOfLikes }}</span>
+              </div>
+            </div>
           </div>
           <div class="selection-overlay">
             <div class="selection-icon">
@@ -44,6 +52,14 @@
           <div class="card-info">
             <h3 class="card-name">{{ currentPair()[1].fullName }}</h3>
             <p class="card-description">{{ currentPair()[1].position }}</p>
+            <div class="likes-container">
+              <div class="likes-count">
+                <svg class="heart-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span class="likes-number">{{ currentPair()[1].numberOfLikes }}</span>
+              </div>
+            </div>
           </div>
           <div class="selection-overlay">
             <div class="selection-icon">
@@ -52,19 +68,6 @@
               </svg>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Swipe Instructions -->
-      <div class="swipe-instruction">
-        <p>Swipe or tap to choose</p>
-        <div class="swipe-arrows">
-          <svg class="arrow-left" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-          </svg>
-          <svg class="arrow-right" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-          </svg>
         </div>
       </div>
     </div>
@@ -76,7 +79,7 @@
         (click)="selectLeft()"
         [disabled]="!canSwipe()"
       >
-        Choose Left
+        Обрати зліва
       </button>
       
       <button 
@@ -84,14 +87,14 @@
         (click)="selectRight()"
         [disabled]="!canSwipe()"
       >
-        Choose Right
+        Обрати справа
       </button>
     </div>
 
     <!-- Progress Indicator -->
     <div class="progress-indicator">
       <div class="progress-text">
-        Comparisons: {{ comparisonCount() }}
+        Усього: {{ comparisonCount() }}
       </div>
       <div class="progress-bar">
         <div 

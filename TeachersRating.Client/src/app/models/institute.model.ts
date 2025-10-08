@@ -21,5 +21,7 @@ export interface Worker {
   fullName: string;
   position: string;
   personalPageUrl: string;
+  numberOfLikes: number;
+  numberOfDislikes: number;
   photo: Photo;
 }

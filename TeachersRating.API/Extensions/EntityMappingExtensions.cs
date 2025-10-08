@@ -90,6 +90,8 @@ public static class EntityMappingExtensions
             Position = worker.Position,
             PersonalPageUrl = worker.PersonalPageUrl,
             Photo = worker.Photo?.ToDto() ?? new PhotoDto(),
+            NumberOfLikes = worker.NumberOfLikes,
+            NumberOfDislikes = worker.NumberOfDislikes,
             Departments = worker.Departments
                 .Select(d => new DepartmentSimpleDto
                 {
@@ -108,7 +110,9 @@ public static class EntityMappingExtensions
         {
             Id = worker.Id,
             FullName = worker.FullName,
-            Position = worker.Position
+            Position = worker.Position,
+            NumberOfLikes = worker.NumberOfLikes,
+            NumberOfDislikes = worker.NumberOfDislikes
         };
     }
 

@@ -14,13 +14,13 @@ import { Worker } from '../../models/institute.model';
 })
 export class SwipeComparisonComponent implements OnInit {
   @ViewChild('container', { static: true }) container!: ElementRef<HTMLDivElement>;
-  
+
   private destroyRef = inject(DestroyRef);
   private apiService = inject(ApiService);
-  
+
   // Input for department ID
   departmentId = input.required<string>();
-  
+
   // Current worker pair for comparison
   currentPair = signal<Worker[]>([]);
   currentWinner = signal<Worker | null>(null);
@@ -32,6 +32,9 @@ export class SwipeComparisonComponent implements OnInit {
   error = signal<string>('');
   comparisonCount = signal(0);
 
+  // Swipe direction toggle: true = normal (swipe right selects right), false = inverted (swipe right selects left)
+  normalSwipeDirection = signal(false);
+
   // Touch/mouse tracking
   private startX = 0;
   private isDragging = false;
@@ -39,10 +42,10 @@ export class SwipeComparisonComponent implements OnInit {
 
   // Computed properties
   canSwipe = computed(() => !this.isAnimating() && !this.isLoading());
-  
+
   // Expose Math for template use
   protected readonly Math = Math;
-  
+
   // Transform styles for smooth animation
   leftCardTransform = computed(() => {
     const offset = this.swipeOffset();
@@ -62,18 +65,18 @@ export class SwipeComparisonComponent implements OnInit {
   private loadNextPair() {
     this.isLoading.set(true);
     this.error.set('');
-    
+
     this.apiService.getTwoRandomWorkers(this.departmentId()).subscribe({
       next: (workers) => {
         if (workers.length === 2) {
           // If we have a winner from previous round, keep them and replace the other
           const winner = this.currentWinner();
           const position = this.winnerPosition();
-          
+
           if (winner && position) {
             // Keep the winner and add one new worker
             const newWorker = workers.find(w => w.id !== winner.id) || workers[0];
-            
+
             if (position === 'right') {
               // Winner was on right, keep them on right, new worker on left
               this.currentPair.set([newWorker, winner]);
@@ -116,7 +119,7 @@ export class SwipeComparisonComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
         if (!this.canSwipe()) return;
-        
+
         event.preventDefault();
         this.startGesture(event);
       });
@@ -126,7 +129,7 @@ export class SwipeComparisonComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
         if (!this.isDragging || !this.canSwipe()) return;
-        
+
         event.preventDefault();
         this.updateGesture(event);
       });
@@ -136,7 +139,7 @@ export class SwipeComparisonComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
         if (!this.isDragging) return;
-        
+
         this.endGesture();
       });
   }
@@ -152,13 +155,13 @@ export class SwipeComparisonComponent implements OnInit {
 
     const currentX = this.getClientX(event);
     const deltaX = currentX - this.startX;
-    
+
     // Limit the swipe distance
     const maxSwipe = 150;
     const clampedDelta = Math.max(-maxSwipe, Math.min(maxSwipe, deltaX));
-    
+
     this.swipeOffset.set(clampedDelta);
-    
+
     // Determine swipe direction for visual feedback
     if (Math.abs(deltaX) > 20) {
       this.swipeDirection.set(deltaX > 0 ? 'right' : 'left');
@@ -189,23 +192,37 @@ export class SwipeComparisonComponent implements OnInit {
 
     this.isAnimating.set(true);
     const pair = this.currentPair();
-    
+
     if (pair.length === 2) {
-      const winner = direction === 'right' ? pair[1] : pair[0];
-      const loser = direction === 'right' ? pair[0] : pair[1];
-      
-      console.log(`Selected: ${winner.fullName}, Rejected: ${loser.fullName}`);
-      
+      // Apply swipe direction interpretation based on toggle
+      const actualDirection = this.normalSwipeDirection() ? direction : (direction === 'left' ? 'right' : 'left');
+
+      const winner = actualDirection === 'right' ? pair[1] : pair[0];
+      const loser = actualDirection === 'right' ? pair[0] : pair[1];
+
+      console.log(`Swipe: ${direction}, Interpreted as: ${actualDirection}, Selected: ${winner.fullName}, Rejected: ${loser.fullName}`);
+
       // Set the winner to be kept for next round and remember their position
       this.currentWinner.set(winner);
-      this.winnerPosition.set(direction === 'right' ? 'right' : 'left');
-      
+      this.winnerPosition.set(actualDirection === 'right' ? 'right' : 'left');
+
       // Record the choice (optional - implement this endpoint in your backend)
-      this.apiService.recordChoice(winner.id, loser.id).subscribe({
-        next: () => console.log('Choice recorded'),
+      this.apiService.likeWorker(winner.id).subscribe({
+        next: (likedWorker) => {
+          winner.numberOfLikes = likedWorker.numberOfLikes;
+          console.log('Choice recorded: ', likedWorker);
+        },
         error: (error) => console.log('Failed to record choice:', error)
       });
-      
+
+      this.apiService.dislikeWorker(loser.id).subscribe({
+        next: (dislikedWorker) => {
+          loser.numberOfDislikes = dislikedWorker.numberOfDislikes;
+          console.log('Choice recorded: ', dislikedWorker);
+        },
+        error: (error) => console.log('Failed to record choice:', error)
+      });
+
       // Update comparison count
       this.comparisonCount.update(count => count + 1);
     }
@@ -223,7 +240,7 @@ export class SwipeComparisonComponent implements OnInit {
     this.swipeOffset.set(0);
     this.swipeDirection.set(null);
     this.isAnimating.set(false);
-    
+
     // Load next pair (endless swiping)
     this.loadNextPair();
   }
@@ -240,6 +257,12 @@ export class SwipeComparisonComponent implements OnInit {
 
   selectRight() {
     this.makeSelection('right');
+  }
+
+  // Toggle swipe direction interpretation
+  toggleSwipeDirection() {
+    this.normalSwipeDirection.update(current => !current);
+    console.log(`Swipe direction is now: ${this.normalSwipeDirection() ? 'Normal' : 'Inverted'}`);
   }
 
   restart() {

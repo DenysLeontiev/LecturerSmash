@@ -22,11 +22,11 @@ export class ApiService {
     return this.http.get<Worker[]>(`${this.baseUrl}/two-random-workers/${departmentId}`);
   }
 
-  recordChoice(winnerId: string, loserId: string): Observable<any> {
-    // You can implement this endpoint in your backend later
-    return this.http.post(`${this.baseUrl}/record-choice`, {
-      winnerId,
-      loserId
-    });
+  likeWorker(workerId: string): Observable<Worker> {
+    return this.http.post<Worker>(`${this.baseUrl}/worker/${workerId}/like`, {});
+  }
+
+  dislikeWorker(workerId: string): Observable<Worker> {
+    return this.http.post<Worker>(`${this.baseUrl}/worker/${workerId}/dislike`, {});
   }
 }
