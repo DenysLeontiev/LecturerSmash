@@ -2,7 +2,8 @@ import { Component, OnInit, signal, inject, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
-import { Institute, Department } from '../../models/institute.model';
+import { Institute } from '../../models/institute.model';
+import { Department } from '../../models/department.model';
 
 @Component({
   selector: 'app-selection-form',

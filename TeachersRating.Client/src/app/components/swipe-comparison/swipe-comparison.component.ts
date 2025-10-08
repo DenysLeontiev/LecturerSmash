@@ -4,7 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent, merge } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ApiService } from '../../services/api.service';
-import { Worker } from '../../models/institute.model';
+import { Worker } from '../../models/worker.model';
 
 @Component({
   selector: 'app-swipe-comparison',

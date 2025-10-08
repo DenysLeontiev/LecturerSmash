@@ -1,14 +1,17 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Institute, Department, Worker } from '../models/institute.model';
+import { Institute } from '../models/institute.model';
+import { environment } from '../../environments/environment.development';
+import { Department } from '../models/department.model';
+import { Worker } from '../models/worker.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
   private http = inject(HttpClient);
-  private readonly baseUrl = 'https://localhost:7006/api'; // Update with your API URL
+  private readonly baseUrl = environment.baseUrl;
 
   getInstitutes(): Observable<Institute[]> {
     return this.http.get<Institute[]>(`${this.baseUrl}/institutes`);
