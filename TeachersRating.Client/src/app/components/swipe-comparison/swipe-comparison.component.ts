@@ -2,13 +2,14 @@ import { Component, ElementRef, ViewChild, signal, computed, OnInit, DestroyRef,
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent, merge } from 'rxjs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ApiService } from '../../services/api.service';
 import { Worker } from '../../models/institute.model';
 
 @Component({
   selector: 'app-swipe-comparison',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FontAwesomeModule],
   templateUrl: './swipe-comparison.component.html',
   styleUrl: './swipe-comparison.component.scss'
 })
