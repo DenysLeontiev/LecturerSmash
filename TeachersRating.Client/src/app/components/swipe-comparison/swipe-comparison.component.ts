@@ -5,6 +5,8 @@ import { fromEvent, merge } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ApiService } from '../../services/api.service';
 import { Worker } from '../../models/worker.model';
+import { Department } from '../../models/department.model';
+import { Institute } from '../../models/institute.model';
 
 @Component({
   selector: 'app-swipe-comparison',
@@ -22,19 +24,26 @@ export class SwipeComparisonComponent implements OnInit {
   // Input for department ID
   departmentId = input.required<string>();
 
+  // Department and Institute information
+  public departmentInfo = signal<Department | null>(null);
+  public instituteInfo = signal<Institute | null>(null);
+
   // Current worker pair for comparison
-  currentPair = signal<Worker[]>([]);
-  currentWinner = signal<Worker | null>(null);
-  winnerPosition = signal<'left' | 'right' | null>(null);
-  swipeOffset = signal(0);
-  isAnimating = signal(false);
-  swipeDirection = signal<'left' | 'right' | null>(null);
-  isLoading = signal(false);
-  error = signal<string>('');
-  comparisonCount = signal(0);
+  public currentPair = signal<Worker[]>([]);
+  public swipeDirection = signal<'left' | 'right' | null>(null);
+  public error = signal<string>('');
+  public isLoading = signal(false);
+  public comparisonCount = signal(0);
+
+  private currentWinner = signal<Worker | null>(null);
+  private winnerPosition = signal<'left' | 'right' | null>(null);
+  private swipeOffset = signal(0);
+  private isAnimating = signal(false);
+
+  public canSwipe = computed(() => !this.isAnimating() && !this.isLoading());
 
   // Swipe direction toggle: true = normal (swipe right selects right), false = inverted (swipe right selects left)
-  normalSwipeDirection = signal(false);
+  private normalSwipeDirection = signal(false);
 
   // Touch/mouse tracking
   private startX = 0;
@@ -42,18 +51,17 @@ export class SwipeComparisonComponent implements OnInit {
   private animationFrameId: number | null = null;
 
   // Computed properties
-  canSwipe = computed(() => !this.isAnimating() && !this.isLoading());
 
   // Expose Math for template use
   protected readonly Math = Math;
 
   // Transform styles for smooth animation
-  leftCardTransform = computed(() => {
+  public leftCardTransform = computed(() => {
     const offset = this.swipeOffset();
     return `translateX(${offset}px)`;
   });
 
-  rightCardTransform = computed(() => {
+  public rightCardTransform = computed(() => {
     const offset = this.swipeOffset();
     return `translateX(${offset}px)`;
   });
@@ -253,11 +261,11 @@ export class SwipeComparisonComponent implements OnInit {
 
   // Manual selection methods for buttons
   selectLeft() {
-    this.makeSelection('left');
+    this.makeSelection('right');
   }
 
   selectRight() {
-    this.makeSelection('right');
+    this.makeSelection('left');
   }
 
   // Toggle swipe direction interpretation
@@ -266,7 +274,7 @@ export class SwipeComparisonComponent implements OnInit {
     console.log(`Swipe direction is now: ${this.normalSwipeDirection() ? 'Normal' : 'Inverted'}`);
   }
 
-  restart() {
+  public restart(): void {
     this.swipeOffset.set(0);
     this.swipeDirection.set(null);
     this.isAnimating.set(false);
