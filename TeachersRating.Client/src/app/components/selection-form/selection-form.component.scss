@@ -54,7 +54,7 @@ h1 {
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 1rem;
-  background: white;
+  background-color: white;
   color: #333;
   transition: border-color 0.2s ease;
 
@@ -64,25 +64,9 @@ h1 {
   }
 
   &:disabled {
-    background: #f8f9fa;
+    background-color: #f8f9fa;
     color: #666;
     cursor: not-allowed;
-  }
-
-  option {
-    background: white;
-    color: #333;
-    padding: 0.5rem;
-    
-    &:hover {
-      background: #f0f0f0;
-      color: #333;
-    }
-    
-    &:checked {
-      background: #333;
-      color: white;
-    }
   }
 
   @media (max-width: 480px) {

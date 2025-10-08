@@ -6,7 +6,7 @@ export interface Institute {
 
 export interface Department {
   id: string;
-  name: string;
+  longName: string;
   shortName: string;
   instituteId: string;
 }
