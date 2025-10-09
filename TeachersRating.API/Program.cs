@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using TeachersRating.API.Data;
@@ -14,6 +15,11 @@ builder.Services.AddEndpoints(typeof(Program).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddSpaStaticFiles(configuration =>
+{
+    configuration.RootPath = "wwwroot/browser";
+});
 
 builder.Services.AddCors(options =>
 {
@@ -50,6 +56,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseSpaStaticFiles();
+
 app.UseCors("AllowAngularClient");
 
 app.UseSwagger();
@@ -60,5 +68,14 @@ app.UseHttpsRedirection();
 RouteGroupBuilder apiPrefixGroup = app.MapGroup("api");
 
 app.MapEndpoints(apiPrefixGroup);
+
+app.UseSpa(spa =>
+{
+    spa.Options.SourcePath = "TeachersRating.Client";
+    if (app.Environment.IsDevelopment())
+    {
+        // spa.UseAngularCliServer(npmScript: "start");
+    }
+});
 
 app.Run();

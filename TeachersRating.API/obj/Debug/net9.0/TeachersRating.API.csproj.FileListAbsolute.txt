@@ -156,3 +156,15 @@ C:\TeachersRating\TeachersRating.API\obj\Debug\net9.0\TeachersRating.API.sourcel
 C:\TeachersRating\TeachersRating.API\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
 C:\TeachersRating\TeachersRating.API\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\TeachersRating\TeachersRating.API\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\TeachersRating\TeachersRating.API\bin\Debug\net9.0\TeachersRating.API.staticwebassets.runtime.json
+C:\TeachersRating\TeachersRating.API\bin\Debug\net9.0\Microsoft.AspNetCore.SpaServices.Extensions.dll
+C:\TeachersRating\TeachersRating.API\bin\Debug\net9.0\Microsoft.Extensions.FileProviders.Abstractions.dll
+C:\TeachersRating\TeachersRating.API\bin\Debug\net9.0\Microsoft.Extensions.FileProviders.Physical.dll
+C:\TeachersRating\TeachersRating.API\bin\Debug\net9.0\Microsoft.Extensions.FileSystemGlobbing.dll
+C:\TeachersRating\TeachersRating.API\obj\Debug\net9.0\compressed\dgu2igt1f1-94st0h2d4y.gz
+C:\TeachersRating\TeachersRating.API\obj\Debug\net9.0\compressed\jhcpj1aq5h-vagikyz9qx.gz
+C:\TeachersRating\TeachersRating.API\obj\Debug\net9.0\compressed\jrg6cd0r7r-wxv4qgj3wc.gz
+C:\TeachersRating\TeachersRating.API\obj\Debug\net9.0\compressed\b74597nbrt-6gfv0w0g5l.gz
+C:\TeachersRating\TeachersRating.API\obj\Debug\net9.0\compressed\vonuf7kent-1dks0wz7uz.gz
+C:\TeachersRating\TeachersRating.API\obj\Debug\net9.0\compressed\30hs7dv5cs-fsslpuoifp.gz
+C:\TeachersRating\TeachersRating.API\obj\Debug\net9.0\compressed\8okw1ynzsd-tvy3j3n584.gz

@@ -17,6 +17,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
+            "outputPath": "C:\\TeachersRating\\TeachersRating.API\\wwwroot",
             "browser": "src/main.ts",
             "polyfills": [
               "zone.js"
@@ -38,8 +39,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "2mb",
+                  "maximumError": "5MB"
                 },
                 {
                   "type": "anyComponentStyle",

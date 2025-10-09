@@ -1,0 +1,101 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  AZURE_WEBAPP_NAME: "teachers-rating-app"  # Replace with your actual Azure Web App name
+  AZURE_WEBAPI_PACKAGE_PATH: "./publish"
+  DOTNET_VERSION: "9.0.x"
+  NODE_VERSION: "20.x"
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Cache .NET packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Cache Node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies for backend
+        run: dotnet restore ./TeachersRating.API/TeachersRating.API.csproj
+
+      - name: Build backend
+        run: dotnet build --configuration Release --no-restore ./TeachersRating.API/TeachersRating.API.csproj
+
+      - name: Test backend
+        run: dotnet test --configuration Release --no-build ./TeachersRating.API/TeachersRating.API.csproj --verbosity normal
+
+      - name: Install dependencies for frontend
+        working-directory: ./TeachersRating.Client
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: ./TeachersRating.Client
+        run: npm run build
+
+      - name: Publish backend
+        run: dotnet publish ./TeachersRating.API/TeachersRating.API.csproj --configuration Release --no-build --output '${{ env.AZURE_WEBAPI_PACKAGE_PATH }}'
+
+      - name: List contents of publish directory (for debugging)
+        run: ls -la ./publish
+
+      - name: List contents of wwwroot directory (for debugging)
+        run: ls -la ./publish/wwwroot || echo "wwwroot directory not found"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: published-app
+          path: ${{ env.AZURE_WEBAPI_PACKAGE_PATH }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: published-app
+          path: ${{ env.AZURE_WEBAPI_PACKAGE_PATH }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          slot-name: 'production'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ${{ env.AZURE_WEBAPI_PACKAGE_PATH }}
