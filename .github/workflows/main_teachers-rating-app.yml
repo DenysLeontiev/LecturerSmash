@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     permissions:
       contents: read #This is required for actions/checkout
 
@@ -21,13 +21,32 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.x'
+          dotnet-version: '9.0.x'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Restore .NET dependencies
+        run: dotnet restore ./TeachersRating.API/TeachersRating.API.csproj
+
+      - name: Install Angular dependencies
+        working-directory: ./TeachersRating.Client
+        run: npm ci
+
+      - name: Build Angular frontend
+        working-directory: ./TeachersRating.Client
+        run: npm run build
 
       - name: Build with dotnet
-        run: dotnet build ./TeachersRating.API/TeachersRating.API.csproj --configuration Release
+        run: dotnet build ./TeachersRating.API/TeachersRating.API.csproj --configuration Release --no-restore
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+        run: dotnet publish ./TeachersRating.API/TeachersRating.API.csproj -c Release --no-build -o "${{env.DOTNET_ROOT}}/myapp"
+
+      - name: List published files (for debugging)
+        run: ls -la "${{env.DOTNET_ROOT}}/myapp"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -36,7 +55,7 @@ jobs:
           path: ${{env.DOTNET_ROOT}}/myapp
 
   deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     needs: build
     permissions:
       id-token: write #This is required for requesting the JWT
