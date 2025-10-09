@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 
-// builder.Services.RegisterDbContext(builder.Configuration);
+builder.Services.RegisterDbContext(builder.Configuration);
 
 builder.Services.AddEndpoints(typeof(Program).Assembly);
 
