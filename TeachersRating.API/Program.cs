@@ -20,21 +20,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAngularClient",
         policy =>
         {
-            if (builder.Environment.IsDevelopment())
-            {
-                // More permissive policy for development
-                policy.AllowAnyOrigin()
-                      .AllowAnyHeader()
-                      .AllowAnyMethod();
-            }
-            else
-            {
-                // Restrictive policy for production
-                policy.WithOrigins("http://localhost:4200", "https://localhost:4200")
-                      .AllowAnyHeader()
-                      .AllowAnyMethod()
-                      .AllowCredentials();
-            }
+            policy.WithOrigins(builder.Configuration["ClientUrl"]!)
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         });
 });
 
