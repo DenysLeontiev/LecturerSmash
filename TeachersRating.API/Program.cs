@@ -69,13 +69,4 @@ RouteGroupBuilder apiPrefixGroup = app.MapGroup("api");
 
 app.MapEndpoints(apiPrefixGroup);
 
-app.UseSpa(spa =>
-{
-    spa.Options.SourcePath = "TeachersRating.Client";
-    if (app.Environment.IsDevelopment())
-    {
-        // spa.UseAngularCliServer(npmScript: "start");
-    }
-});
-
 app.Run();
