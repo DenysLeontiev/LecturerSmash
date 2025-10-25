@@ -1,2 +1,19 @@
+# Node
 node_modules/
+
+# SQLite databases
+*.db
+*.db-shm
+*.db-wal
+
+# Build artifacts
+[Bb]in/
+[Oo]bj/
+*.dll
+*.exe
 *.pdb
+
+# User-specific files
+*.user
+*.suo
+.vs/
