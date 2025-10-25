@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 using TeachersRating.API.Data;
 using TeachersRating.API.Extensions;
@@ -15,11 +15,6 @@ builder.Services.AddEndpoints(typeof(Program).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddSpaStaticFiles(configuration =>
-{
-    configuration.RootPath = "wwwroot/browser";
-});
 
 builder.Services.AddCors(options =>
 {
@@ -56,7 +51,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseSpaStaticFiles();
+
 
 app.UseCors("AllowAngularClient");
 
