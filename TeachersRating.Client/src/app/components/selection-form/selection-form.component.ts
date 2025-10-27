@@ -39,7 +39,7 @@ export class SelectionFormComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: (error) => {
-        this.error.set('Failed to load institutes. Please try again.');
+        this.error.set('Сталася помилка під час завантаження інститутів. Бумб ласка, спробуйте пізніше.');
         this.isLoading.set(false);
         console.error('Error loading institutes:', error);
       }
@@ -66,7 +66,7 @@ export class SelectionFormComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: (error) => {
-        this.error.set('Failed to load departments. Please try again.');
+        this.error.set('Сталася помилка під час завантаження кафедр. Бумб ласка, спробуйте пізніше.');
         this.isLoading.set(false);
         console.error('Error loading departments:', error);
       }

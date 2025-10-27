@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TeachersRating.API.Data;
 using TeachersRating.API.Extensions;
@@ -9,7 +10,7 @@ public class GetWorkersForDepartmentById : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/workers/{departmentId:guid}", async (Guid departmentId, AppDbContext context) =>
+        app.MapGet("/workers/{departmentId:guid}", async (Guid departmentId, [FromServices] AppDbContext context) =>
         {
             var workers = await context.Workers.Where(w => w.Departments.Any(d => d.Id == departmentId))
                 .Include(w => w.Photo)

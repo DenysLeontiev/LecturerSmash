@@ -1,0 +1,16 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
+
+services:
+  teachersratingapi:
+    image: teachersratingapi
+    build:
+      context: .
+      dockerfile: TeachersRating.API/Dockerfile
+      args:
+        - configuration=Debug
+    ports:
+      - 5166:5166
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - ~/.vsdbg:/remote_debugger:rw

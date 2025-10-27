@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TeachersRating.API.Data;
 using TeachersRating.API.Extensions;
@@ -9,7 +10,7 @@ public class GetRandomWorkerForDepartment : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("random-worker/{departmentId:guid}", async (Guid departmentId, AppDbContext context) =>
+        app.MapGet("random-worker/{departmentId:guid}", async (Guid departmentId, [FromServices] AppDbContext context) =>
         {
             var workersRecordsCount = await context.Workers.Where(x => x.Departments.Any(x => x.Id.Equals(departmentId)))
                                                            .CountAsync();

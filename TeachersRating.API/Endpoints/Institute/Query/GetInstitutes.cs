@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TeachersRating.API.Data;
 using TeachersRating.API.Extensions;
@@ -9,7 +10,7 @@ public class GetInstitutes : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/institutes", async (AppDbContext context) =>
+        app.MapGet("/institutes", async ([FromServices] AppDbContext context) =>
         {
             var institutes = await context.Institutes.AsNoTracking()
                 .ToListAsync();

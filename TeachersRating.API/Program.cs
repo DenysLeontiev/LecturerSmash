@@ -37,7 +37,7 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<AppDbContext>();
         context.Database.Migrate();
-        // DataBaseSeeded.SeedDataAsync(context).Wait();
+        DataBaseSeeded.SeedDataAsync(context).Wait();
     }
     catch (Exception ex)
     {
@@ -51,7 +51,18 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.MapGet("/allocation", () =>
+{
+    var allocated = Process.GetCurrentProcess()
+                .PrivateMemorySize64 / 1024 / 1024;
 
+    var workingSet = Process.GetCurrentProcess()
+        .WorkingSet64 / 1024 / 1024;
+
+    var gcMemory = GC.GetTotalMemory(false) / 1024 / 1024;
+
+    return Results.Ok($"allocated: {allocated} | workingSet: {workingSet} | gcMemory: {gcMemory}");
+});
 
 app.UseCors("AllowAngularClient");
 

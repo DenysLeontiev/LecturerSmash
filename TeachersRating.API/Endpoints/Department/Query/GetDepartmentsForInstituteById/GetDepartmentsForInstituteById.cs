@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TeachersRating.API.Data;
 using TeachersRating.API.Extensions;
@@ -9,7 +10,7 @@ public class GetDepartmentsForInstituteById : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/departments/{intstituteId:guid}", async (Guid intstituteId, AppDbContext context) =>
+        app.MapGet("/departments/{intstituteId:guid}", async (Guid intstituteId, [FromServices] AppDbContext context) =>
         {
             var departments = await context.Departments.Where(x => x.InstituteId.Equals(intstituteId))
                 .AsNoTracking()

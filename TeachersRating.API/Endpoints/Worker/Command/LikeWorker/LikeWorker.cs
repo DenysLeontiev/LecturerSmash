@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TeachersRating.API.Data;
 using TeachersRating.API.Entities;
@@ -10,7 +11,7 @@ public class LikeWorker : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("worker/{workerId:guid}/like", async (Guid workerId, AppDbContext context) =>
+        app.MapPost("worker/{workerId:guid}/like", async (Guid workerId, [FromServices] AppDbContext context) =>
         {
             var worker = await context.Workers.Include(x => x.Photo)
                 .FirstOrDefaultAsync(x => x.Id.Equals(workerId));

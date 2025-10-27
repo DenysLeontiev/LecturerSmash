@@ -1,0 +1,23 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
+
+services:
+  teachersratingapi:
+    image: teachersratingapi
+    build:
+      context: .
+      dockerfile: TeachersRating.API/Dockerfile
+    ports:
+      - 5166:5166
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/TeacherRatings.db
+      - ClientUrl=http://localhost:4200
+    volumes:
+      - ./sqlite:/app/data
+  teachersratingclient:
+    image:  teachersratingclient
+    build: 
+      context: ./TeachersRating.Client
+      dockerfile: Dockerfile
+    ports:
+      - 4200:4200
