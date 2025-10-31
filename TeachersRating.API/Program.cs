@@ -21,8 +21,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAngularClient",
         policy =>
         {
-            var clientUrls = builder.Configuration.GetSection("ClientUrls").Get<string[]>() ?? Array.Empty<string>();
-            policy.WithOrigins(clientUrls)
+            policy.WithOrigins(builder.Configuration["ClientUrl"]!)
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
