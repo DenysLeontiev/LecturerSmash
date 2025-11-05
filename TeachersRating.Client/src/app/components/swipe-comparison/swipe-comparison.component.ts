@@ -1,5 +1,6 @@
 import { Component, ElementRef, ViewChild, signal, computed, OnInit, DestroyRef, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent, merge } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -18,8 +19,10 @@ export class SwipeComparisonComponent implements OnInit {
 
   public apiService = inject(ApiService);
   private destroyRef = inject(DestroyRef);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
-  departmentId = input.required<string>();
+  departmentId = signal<string>('');
 
   public currentPair = signal<Worker[]>([]);
   public swipeDirection = signal<'left' | 'right' | null>(null);
@@ -52,8 +55,14 @@ export class SwipeComparisonComponent implements OnInit {
   });
 
   ngOnInit() {
-    this.loadNextPair();
-    this.setupGestureHandling();
+    const departmentId = this.route.snapshot.paramMap.get('departmentId');
+    if (departmentId) {
+      this.departmentId.set(departmentId);
+      this.loadNextPair();
+      this.setupGestureHandling();
+    } else {
+      this.router.navigate(['/home']);
+    }
   }
 
   private loadNextPair() {
@@ -243,5 +252,9 @@ export class SwipeComparisonComponent implements OnInit {
     this.winnerPosition.set(null);
     this.comparisonCount.set(0);
     this.loadNextPair();
+  }
+
+  goBack(): void {
+    this.router.navigate(['/home']);
   }
 }

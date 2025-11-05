@@ -34,6 +34,10 @@ export class ApiService implements OnDestroy {
     return this.http.get<Worker[]>(`${this.baseUrl}/two-random-workers/${departmentId}`);
   }
 
+  getTopWorkersForDepartment(departmentId: string): Observable<Worker[]> {
+    return this.http.get<Worker[]>(`${this.baseUrl}/${departmentId}/top-workers`);
+  }
+
   likeWorker(workerId: string): Observable<Worker> {
     return this.http.post<Worker>(`${this.baseUrl}/worker/${workerId}/like`, {});
   }

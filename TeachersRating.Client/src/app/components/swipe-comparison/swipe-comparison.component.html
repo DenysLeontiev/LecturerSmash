@@ -1,4 +1,9 @@
 <div class="swipe-container" #container>
+  <div class="back-button-container">
+    <button class="back-btn" (click)="goBack()">
+      <fa-icon icon="backward-step"></fa-icon> Назад
+    </button>
+  </div>
   <div class="swipe-header">
     <span class="department-name">{{ apiService.lastSelectedDepartmentName() }}</span>
     <span class="institute-name">{{ apiService.lastSelectedInstituteName() }}</span>

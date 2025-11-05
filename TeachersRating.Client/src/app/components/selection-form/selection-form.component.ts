@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, inject, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { Institute } from '../../models/institute.model';
 import { Department } from '../../models/department.model';
@@ -8,12 +9,13 @@ import { Department } from '../../models/department.model';
 @Component({
   selector: 'app-selection-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './selection-form.component.html',
   styleUrl: './selection-form.component.scss'
 })
 export class SelectionFormComponent implements OnInit {
   private apiService = inject(ApiService);
+  private router = inject(Router);
 
   institutes = signal<Institute[]>([]);
   departments = signal<Department[]>([]);
@@ -93,7 +95,7 @@ export class SelectionFormComponent implements OnInit {
   startComparison() {
     const departmentId = this.selectedDepartmentId();
     if (departmentId) {
-      this.departmentSelected.emit(departmentId);
+      this.router.navigate(['/comparison', departmentId]);
     }
   }
 

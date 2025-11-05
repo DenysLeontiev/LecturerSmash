@@ -10,16 +10,18 @@ public class GetTopWorkersForDepartmentById : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("{departmentId:guid}/top", async (Guid departmentId, [FromServices] AppDbContext context) =>
+        app.MapGet("{departmentId:guid}/top-workers", async (Guid departmentId, [FromServices] AppDbContext context) =>
         {
-            var topWorkers = await context.Workers.OrderByDescending(x => x.NumberOfLikes)
-                                                  .Where(x => x.Departments.Any(x => x.Equals(departmentId)))
-                                                  .AsNoTracking()
-                                                  .ToListAsync();
+            var topWorkers = await context.Workers
+                                          .Where(x => x.Departments.Any(d => d.Id == departmentId))
+                                          .Include(p => p.Photo)
+                                          .OrderByDescending(x => x.NumberOfLikes)
+                                          .AsNoTracking()
+                                          .ToListAsync();
 
             var mappedTopWorkers = topWorkers.Select(x => x.ToDto());
 
-            return Results.Ok(topWorkers);
+            return Results.Ok(mappedTopWorkers);
         }).WithName("TopWorkersForDepartment");
     }
 }
