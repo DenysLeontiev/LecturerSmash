@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild, signal, computed, OnInit, DestroyRef, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent, merge } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -10,7 +10,7 @@ import { Worker } from '../../models/worker.model';
 @Component({
   selector: 'app-swipe-comparison',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule],
+  imports: [CommonModule, FontAwesomeModule, RouterLink],
   templateUrl: './swipe-comparison.component.html',
   styleUrl: './swipe-comparison.component.scss'
 })
@@ -252,9 +252,5 @@ export class SwipeComparisonComponent implements OnInit {
     this.winnerPosition.set(null);
     this.comparisonCount.set(0);
     this.loadNextPair();
-  }
-
-  goBack(): void {
-    this.router.navigate(['/home']);
   }
 }

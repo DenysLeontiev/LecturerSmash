@@ -1,6 +1,6 @@
 <div class="swipe-container" #container>
   <div class="back-button-container">
-    <button class="back-btn" (click)="goBack()">
+    <button class="back-btn" routerLink="/home">
       <fa-icon icon="backward-step"></fa-icon> Назад
     </button>
   </div>
@@ -26,13 +26,6 @@
               <fa-icon icon="thumbs-down" class="dislike-icon"></fa-icon>
               <span class="dislikes-number">{{ currentPair()[0].numberOfDislikes }}</span>
             </div>
-          </div>
-        </div>
-        <div class="selection-overlay">
-          <div class="selection-icon">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-            </svg>
           </div>
         </div>
       </div>
