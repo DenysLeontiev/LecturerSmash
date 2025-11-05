@@ -10,7 +10,7 @@
 
     <div class="form-group">
       <label for="institute">Інститут:</label>
-      <select id="institute" [value]="selectedInstituteId()" (change)="onInstituteChange($any($event.target).value)"
+      <select id="institute" [value]="selectedInstituteId()" (change)="onInstituteChange($event)"
         [disabled]="isLoading()" class="form-select">
         <option value="">Оберіть Інститут...</option>
         @for (institute of institutes(); track institute.id) {
@@ -21,7 +21,7 @@
 
     <div class="form-group">
       <label for="department">Кафедра:</label>
-      <select id="department" [value]="selectedDepartmentId()" (change)="onDepartmentChange($any($event.target).value)"
+      <select id="department" [value]="selectedDepartmentId()" (change)="onDepartmentChange($event)"
         [disabled]="isLoading() || !selectedInstituteId()" class="form-select">
         <option value="">Оберіть Кафедру...</option>
         @for (department of departments(); track department.id) {

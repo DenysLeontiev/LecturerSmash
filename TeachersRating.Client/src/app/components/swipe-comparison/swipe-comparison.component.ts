@@ -5,8 +5,6 @@ import { fromEvent, merge } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ApiService } from '../../services/api.service';
 import { Worker } from '../../models/worker.model';
-import { Department } from '../../models/department.model';
-import { Institute } from '../../models/institute.model';
 
 @Component({
   selector: 'app-swipe-comparison',
@@ -18,20 +16,13 @@ import { Institute } from '../../models/institute.model';
 export class SwipeComparisonComponent implements OnInit {
   @ViewChild('container', { static: true }) container!: ElementRef<HTMLDivElement>;
 
+  public apiService = inject(ApiService);
   private destroyRef = inject(DestroyRef);
-  private apiService = inject(ApiService);
 
-  // Input for department ID
   departmentId = input.required<string>();
 
-  // Department and Institute information
-  public departmentInfo = signal<Department | null>(null);
-  public instituteInfo = signal<Institute | null>(null);
-
-  // Current worker pair for comparison
   public currentPair = signal<Worker[]>([]);
   public swipeDirection = signal<'left' | 'right' | null>(null);
-  public error = signal<string>('');
   public isLoading = signal(false);
   public comparisonCount = signal(0);
 
@@ -42,20 +33,14 @@ export class SwipeComparisonComponent implements OnInit {
 
   public canSwipe = computed(() => !this.isAnimating() && !this.isLoading());
 
-  // Swipe direction toggle: true = normal (swipe right selects right), false = inverted (swipe right selects left)
   private normalSwipeDirection = signal(false);
 
-  // Touch/mouse tracking
   private startX = 0;
   private isDragging = false;
   private animationFrameId: number | null = null;
 
-  // Computed properties
-
-  // Expose Math for template use
   protected readonly Math = Math;
 
-  // Transform styles for smooth animation
   public leftCardTransform = computed(() => {
     const offset = this.swipeOffset();
     return `translateX(${offset}px)`;
@@ -73,37 +58,30 @@ export class SwipeComparisonComponent implements OnInit {
 
   private loadNextPair() {
     this.isLoading.set(true);
-    this.error.set('');
 
     this.apiService.getTwoRandomWorkers(this.departmentId()).subscribe({
       next: (workers) => {
         if (workers.length === 2) {
-          // If we have a winner from previous round, keep them and replace the other
           const winner = this.currentWinner();
           const position = this.winnerPosition();
 
           if (winner && position) {
-            // Keep the winner and add one new worker
             const newWorker = workers.find(w => w.id !== winner.id) || workers[0];
 
             if (position === 'right') {
-              // Winner was on right, keep them on right, new worker on left
               this.currentPair.set([newWorker, winner]);
             } else {
-              // Winner was on left, keep them on left, new worker on right
               this.currentPair.set([winner, newWorker]);
             }
-            this.currentWinner.set(null); // Reset winner
-            this.winnerPosition.set(null); // Reset position
+            this.currentWinner.set(null); 
+            this.winnerPosition.set(null);
           } else {
-            // First comparison, set both workers
             this.currentPair.set(workers);
           }
         }
         this.isLoading.set(false);
       },
       error: (error) => {
-        this.error.set('Failed to load workers. Please try again.');
         this.isLoading.set(false);
         console.error('Error loading workers:', error);
       }
@@ -113,17 +91,14 @@ export class SwipeComparisonComponent implements OnInit {
   private setupGestureHandling() {
     const element = this.container.nativeElement;
 
-    // Mouse events
     const mouseDown$ = fromEvent<MouseEvent>(element, 'mousedown');
     const mouseMove$ = fromEvent<MouseEvent>(document, 'mousemove');
     const mouseUp$ = fromEvent<MouseEvent>(document, 'mouseup');
 
-    // Touch events
     const touchStart$ = fromEvent<TouchEvent>(element, 'touchstart', { passive: false });
     const touchMove$ = fromEvent<TouchEvent>(document, 'touchmove', { passive: false });
     const touchEnd$ = fromEvent<TouchEvent>(document, 'touchend');
 
-    // Handle start events
     merge(mouseDown$, touchStart$)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
@@ -133,7 +108,6 @@ export class SwipeComparisonComponent implements OnInit {
         this.startGesture(event);
       });
 
-    // Handle move events
     merge(mouseMove$, touchMove$)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
@@ -143,7 +117,6 @@ export class SwipeComparisonComponent implements OnInit {
         this.updateGesture(event);
       });
 
-    // Handle end events
     merge(mouseUp$, touchEnd$)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
@@ -165,13 +138,11 @@ export class SwipeComparisonComponent implements OnInit {
     const currentX = this.getClientX(event);
     const deltaX = currentX - this.startX;
 
-    // Limit the swipe distance
     const maxSwipe = 150;
     const clampedDelta = Math.max(-maxSwipe, Math.min(maxSwipe, deltaX));
 
     this.swipeOffset.set(clampedDelta);
 
-    // Determine swipe direction for visual feedback
     if (Math.abs(deltaX) > 20) {
       this.swipeDirection.set(deltaX > 0 ? 'right' : 'left');
     }
@@ -183,11 +154,9 @@ export class SwipeComparisonComponent implements OnInit {
     const threshold = 50;
 
     if (Math.abs(offset) > threshold) {
-      // Trigger selection
       const direction = offset > 0 ? 'right' : 'left';
       this.makeSelection(direction);
     } else {
-      // Snap back
       this.resetPosition();
     }
   }
@@ -203,7 +172,6 @@ export class SwipeComparisonComponent implements OnInit {
     const pair = this.currentPair();
 
     if (pair.length === 2) {
-      // Apply swipe direction interpretation based on toggle
       const actualDirection = this.normalSwipeDirection() ? direction : (direction === 'left' ? 'right' : 'left');
 
       const winner = actualDirection === 'right' ? pair[1] : pair[0];
@@ -211,11 +179,9 @@ export class SwipeComparisonComponent implements OnInit {
 
       console.log(`Swipe: ${direction}, Interpreted as: ${actualDirection}, Selected: ${winner.fullName}, Rejected: ${loser.fullName}`);
 
-      // Set the winner to be kept for next round and remember their position
       this.currentWinner.set(winner);
       this.winnerPosition.set(actualDirection === 'right' ? 'right' : 'left');
 
-      // Record the choice (optional - implement this endpoint in your backend)
       this.apiService.likeWorker(winner.id).subscribe({
         next: (likedWorker) => {
           winner.numberOfLikes = likedWorker.numberOfLikes;
@@ -232,11 +198,9 @@ export class SwipeComparisonComponent implements OnInit {
         error: (error) => console.log('Failed to record choice:', error)
       });
 
-      // Update comparison count
       this.comparisonCount.update(count => count + 1);
     }
 
-    // Animate out
     const finalOffset = direction === 'right' ? 300 : -300;
     this.swipeOffset.set(finalOffset);
 
@@ -250,7 +214,6 @@ export class SwipeComparisonComponent implements OnInit {
     this.swipeDirection.set(null);
     this.isAnimating.set(false);
 
-    // Load next pair (endless swiping)
     this.loadNextPair();
   }
 
@@ -259,7 +222,6 @@ export class SwipeComparisonComponent implements OnInit {
     this.swipeDirection.set(null);
   }
 
-  // Manual selection methods for buttons
   selectLeft() {
     this.makeSelection('right');
   }
@@ -268,7 +230,6 @@ export class SwipeComparisonComponent implements OnInit {
     this.makeSelection('left');
   }
 
-  // Toggle swipe direction interpretation
   toggleSwipeDirection() {
     this.normalSwipeDirection.update(current => !current);
     console.log(`Swipe direction is now: ${this.normalSwipeDirection() ? 'Normal' : 'Inverted'}`);

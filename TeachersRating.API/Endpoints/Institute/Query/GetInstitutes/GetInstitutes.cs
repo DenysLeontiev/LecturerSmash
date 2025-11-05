@@ -4,7 +4,7 @@ using TeachersRating.API.Data;
 using TeachersRating.API.Extensions;
 using TeachersRating.API.Interfaces;
 
-namespace TeachersRating.API.Endpoints.Institute.Query;
+namespace TeachersRating.API.Endpoints.Institute.Query.GetInstitutes;
 
 public class GetInstitutes : IEndpoint
 {

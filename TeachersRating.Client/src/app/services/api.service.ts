@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, OnDestroy, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Institute } from '../models/institute.model';
@@ -9,9 +9,18 @@ import { Worker } from '../models/worker.model';
 @Injectable({
   providedIn: 'root'
 })
-export class ApiService {
+export class ApiService implements OnDestroy {
+
+  ngOnDestroy(): void {
+    this.lastSelectedInstituteName.set(null);
+    this.lastSelectedDepartmentName.set(null);
+  }
+
+  public lastSelectedInstituteName = signal<string | null>(null);
+  public lastSelectedDepartmentName = signal<string | null>(null);
+
   private http = inject(HttpClient);
-  private readonly baseUrl = environment.baseUrl;
+  private readonly baseUrl: string = environment.baseUrl;
 
   getInstitutes(): Observable<Institute[]> {
     return this.http.get<Institute[]>(`${this.baseUrl}/institutes`);

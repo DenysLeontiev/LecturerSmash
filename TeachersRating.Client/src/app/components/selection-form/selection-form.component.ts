@@ -22,7 +22,6 @@ export class SelectionFormComponent implements OnInit {
   isLoading = signal(false);
   error = signal<string>('');
 
-  // Output event when department is selected
   departmentSelected = output<string>();
 
   ngOnInit() {
@@ -46,16 +45,6 @@ export class SelectionFormComponent implements OnInit {
     });
   }
 
-  onInstituteChange(instituteId: string) {
-    this.selectedInstituteId.set(instituteId);
-    this.selectedDepartmentId.set('');
-    this.departments.set([]);
-
-    if (instituteId) {
-      this.loadDepartments(instituteId);
-    }
-  }
-
   private loadDepartments(instituteId: string) {
     this.isLoading.set(true);
     this.error.set('');
@@ -73,8 +62,32 @@ export class SelectionFormComponent implements OnInit {
     });
   }
 
-  onDepartmentChange(departmentId: string) {
+  onDepartmentChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement | null;
+    if(!selectElement) return;
+    const departmentId = selectElement.value;
+    const departmentName = selectElement.options[selectElement.selectedIndex].text;
+
     this.selectedDepartmentId.set(departmentId);
+    
+    this.apiService.lastSelectedDepartmentName.set(departmentName);
+  }
+
+  onInstituteChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement | null;
+    if (!selectElement) return;
+    const instituteId = selectElement.value;
+    const instituteName = selectElement.options[selectElement.selectedIndex].text;
+
+    this.selectedInstituteId.set(instituteId);
+    this.selectedDepartmentId.set('');
+    this.departments.set([]);
+
+    this.apiService.lastSelectedInstituteName.set(instituteName)
+
+    if (instituteId) {
+      this.loadDepartments(instituteId);
+    }
   }
 
   startComparison() {
