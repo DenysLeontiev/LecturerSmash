@@ -16,31 +16,55 @@ jobs:
           key: ${{ secrets.SSH_KEY }}              # Private SSH key for SSH login to droplet
           username: ${{ secrets.SSH_USERNAME }}    # SSH username (e.g., root)
           script: |
-            echo "Current directory:"
+            echo "========== START DEPLOYMENT =========="
+            echo "Initial working directory:"
             pwd
-            echo "Listing files:"
+            echo "Initial directory contents:"
             ls -la
 
-            cd /root
-            echo "Now in:"
+            echo "---------- Moving to home ----------"
+            cd ~
+            echo "Now in directory:"
             pwd
+            echo "Contents of home directory:"
+            ls -la
 
+            echo "---------- Cleaning old deployment ----------"
             if [ -d "LecturerSmash" ]; then
+              echo "LecturerSmash exists. Stopping containers and removing it..."
               cd LecturerSmash
-              docker compose down
+              docker compose down || true
               cd ..
               rm -rf LecturerSmash
+            else
+              echo "No previous LecturerSmash folder found."
             fi
 
-            echo "Verifying SSH connection to GitHub..."
+            echo "---------- Verifying SSH access to GitHub ----------"
             ssh -T git@github.com || true
 
-            echo "Cloning repository..."
+            echo "---------- Cloning repository ----------"
             git clone git@github.com:DenysLeontiev/LecturerSmash.git
 
+            echo "---------- Confirming clone location ----------"
+            echo "Current directory:"
+            pwd
+            echo "Checking if LecturerSmash exists:"
+            ls -la | grep LecturerSmash || echo "LecturerSmash not found!"
+            echo "Full absolute path of LecturerSmash:"
+            realpath LecturerSmash || echo "realpath command not available"
+
+            echo "---------- Listing cloned folder ----------"
+            ls -la LecturerSmash || echo "Could not list contents of LecturerSmash"
+
+            echo "---------- Building and running containers ----------"
             cd LecturerSmash
-            echo "Building and running containers..."
             docker compose build
             docker compose up -d
 
-            echo "✅ Deployment completed successfully!"
+            echo "---------- Deployment complete ----------"
+            echo "Currently in:"
+            pwd
+            echo "Running containers:"
+            docker ps
+            echo "========== DEPLOYMENT FINISHED =========="
