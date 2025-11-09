@@ -16,7 +16,15 @@ jobs:
           key: ${{ secrets.SSH_KEY }}              # Private SSH key
           username: ${{ secrets.SSH_USERNAME }}    # SSH username
           script: |
+            echo "Current directory:"
+            pwd
+            echo "Listing files:"
+            ls -la
+
             cd ~
+            echo "Now in:"
+            pwd
+
             if [ -d "LecturerSmash" ]; then
               cd LecturerSmash
               docker compose down
@@ -24,7 +32,10 @@ jobs:
               rm -rf LecturerSmash
             fi
 
-            git clone https://github.com/DenysLeontiev/LecturerSmash.git
+            echo "Cloning repository..."
+            pwd
+            git clone git@github.com:DenysLeontiev/LecturerSmash.git
+
             cd LecturerSmash
             docker compose build
             docker compose up -d
