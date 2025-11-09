@@ -24,7 +24,7 @@ jobs:
 
             echo "---------- Moving to home ----------"
             cd ~
-            echo "Now in directory: "
+            echo "Now in directory:"
             pwd
             echo "Contents of home directory:"
             ls -la
@@ -54,11 +54,14 @@ jobs:
             echo "Full absolute path of LecturerSmash:"
             realpath LecturerSmash || echo "realpath command not available"
 
-            echo "---------- Listing cloned folder ----------"
-            ls -la LecturerSmash || echo "Could not list contents of LecturerSmash"
+            echo "---------- Preparing sqlite directory ----------"
+            cd LecturerSmash
+            mkdir -p sqlite
+            chmod 777 sqlite
+            echo "sqlite directory prepared with full access permissions:"
+            ls -ld sqlite
 
             echo "---------- Building and running containers ----------"
-            cd LecturerSmash
             docker compose build
             docker compose up -d
 
