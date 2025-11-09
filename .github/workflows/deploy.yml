@@ -1,1 +1,30 @@
+name: Build & Deploy
 
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy TeachersRating
+        uses: appleboy/ssh-action@v0.1.2
+        with:
+          host: ${{ secrets.SSH_HOST }}            # IP address of your server
+          key: ${{ secrets.SSH_KEY }}              # Private SSH key
+          username: ${{ secrets.SSH_USERNAME }}    # SSH username
+          script: |
+            cd ~
+            if [ -d "LecturerSmash" ]; then
+              cd LecturerSmash
+              docker compose down
+              cd ..
+              rm -rf LecturerSmash
+            fi
+
+            git clone https://github.com/DenysLeontiev/LecturerSmash.git
+            cd LecturerSmash
+            docker compose build
+            docker compose up -d
