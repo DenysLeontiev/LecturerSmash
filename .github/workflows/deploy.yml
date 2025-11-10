@@ -54,12 +54,15 @@ jobs:
             echo "Full absolute path of LecturerSmash:"
             realpath LecturerSmash || echo "realpath command not available"
 
-            echo "---------- Preparing sqlite directory ----------"
-            cd LecturerSmash
-            mkdir -p sqlite
-            chmod 777 sqlite
-            echo "sqlite directory prepared with full access permissions:"
-            ls -ld sqlite
+            echo "---------- Preparing persistent sqlite directory ----------"
+            if [ ! -d "/root/sqlite" ]; then
+              echo "sqlite folder not found, creating it..."
+              mkdir -p /root/sqlite
+              chmod 777 /root/sqlite
+            else
+              echo "sqlite folder already exists, keeping existing data."
+            fi
+            ls -ld /root/sqlite
 
             echo "---------- Building and running containers ----------"
             docker compose build
