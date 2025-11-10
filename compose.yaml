@@ -13,7 +13,7 @@ services:
       - ConnectionStrings__DefaultConnection=Data Source=/app/data/TeacherRatings.db
       - ClientUrl=http://178.128.197.140:4200
     volumes:
-      - ./sqlite:/app/data
+      - ./root/sqlite:/app/data
   teachersratingclient:
     image:  teachersratingclient
     build: 
