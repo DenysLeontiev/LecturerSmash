@@ -78,17 +78,15 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   cursor: grab;
-  transition: all 0.3s ease;
+  transition: transform 0.1s ease-out, box-shadow 0.3s ease;
   transform-origin: center bottom;
+  will-change: transform;
   
   &:active { cursor: grabbing; }
 
-  &.highlight-left,
-  &.highlight-right {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-    z-index: 10;
-    
-    .selection-overlay { opacity: 1; }
+  &.highlight-left .selection-overlay,
+  &.highlight-right .selection-overlay {
+    opacity: 1;
   }
 
   @media (max-width: 480px) { border-radius: 10px; }
@@ -183,13 +181,14 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.6);
   opacity: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.3s ease;
   border-radius: 12px;
+  pointer-events: none;
   
   @media (max-width: 480px) { border-radius: 10px; }
 }

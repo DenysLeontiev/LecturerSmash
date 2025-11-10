@@ -153,7 +153,9 @@ export class SwipeComparisonComponent implements OnInit {
     this.swipeOffset.set(clampedDelta);
 
     if (Math.abs(deltaX) > 20) {
-      this.swipeDirection.set(deltaX > 0 ? 'right' : 'left');
+      // When swiping left (negative), show on right card (the one being selected)
+      // When swiping right (positive), show on left card (the one being selected)
+      this.swipeDirection.set(deltaX < 0 ? 'right' : 'left');
     }
   }
 
