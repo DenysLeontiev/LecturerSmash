@@ -4,12 +4,13 @@
       <fa-icon icon="backward-step"></fa-icon> Назад
     </button>
   </div>
-  <div class="swipe-header" *ngIf="apiService.lastSelectedDepartmentName() && apiService.lastSelectedInstituteName()">
+  @if (apiService.lastSelectedDepartmentName() && apiService.lastSelectedInstituteName()) {
+  <div class="swipe-header">
     <span class="department-name">{{ apiService.lastSelectedDepartmentName() }}</span>
     <span class="institute-name">{{ apiService.lastSelectedInstituteName() }}</span>
   </div>
+  }
   <div class="comparison-area">
-
     <div class="card left-card" [class.highlight-left]="swipeDirection() === 'left'"
       [style.transform]="leftCardTransform()">
       <div class="card-content">
