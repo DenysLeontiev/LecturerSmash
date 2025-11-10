@@ -4,7 +4,7 @@
       <fa-icon icon="backward-step"></fa-icon> Назад
     </button>
   </div>
-  <div class="swipe-header">
+  <div class="swipe-header" *ngIf="apiService.lastSelectedDepartmentName() && apiService.lastSelectedInstituteName()">
     <span class="department-name">{{ apiService.lastSelectedDepartmentName() }}</span>
     <span class="institute-name">{{ apiService.lastSelectedInstituteName() }}</span>
   </div>
