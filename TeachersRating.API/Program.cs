@@ -30,19 +30,30 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+await ApplyMigrationsAndSeedDataAsync(app.Services);
+
+static async Task ApplyMigrationsAndSeedDataAsync(IServiceProvider services)
 {
-    var services = scope.ServiceProvider;
+    using var scope = services.CreateScope();
+    var scopedServices = scope.ServiceProvider;
+
     try
     {
-        var context = services.GetRequiredService<AppDbContext>();
-        context.Database.Migrate();
-        DataBaseSeeded.SeedDataAsync(context).Wait();
+        var context = scopedServices.GetRequiredService<AppDbContext>();
+
+        var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
+        var pendingMigrationsList = pendingMigrations.ToList();
+
+        if (pendingMigrationsList.Any())
+        {
+            await context.Database.MigrateAsync();
+        }
+
+        await DataBaseSeeded.SeedDataAsync(context);
     }
-    catch (Exception ex)
+    catch (Exception)
     {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred during migration or seeding.");
+        throw;
     }
 }
 
