@@ -4,6 +4,7 @@ using System.Reflection.Metadata;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using TeachersRating.API.BackgroundServices;
 using TeachersRating.API.Data;
 using TeachersRating.API.Interfaces;
 using TeachersRating.API.Services;
@@ -43,6 +44,14 @@ public static class ServicesExtentions
     {
         services.AddSingleton<IPresenceTrackerService, PresenceTrackerService>();
 
+        return services;
+    }
+
+    public static IServiceCollection AddContinuousBackgroundService<TIteration>(this IServiceCollection services)
+        where TIteration : class, IContinuousWorkIteration
+    {
+        services.AddScoped<TIteration>();
+        services.AddHostedService<ContinuousBackgroundService<TIteration>>();
         return services;
     }
 }

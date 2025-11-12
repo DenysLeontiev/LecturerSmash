@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
+using TeachersRating.API.BackgroundJobs;
 using TeachersRating.API.Data;
 using TeachersRating.API.Extensions;
 using TeachersRating.API.Hubs;
@@ -11,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 builder.Services.RegisterServices();
+builder.Services.AddContinuousBackgroundService<TrackOnlineUsersIteration>();
 
 builder.Services.RegisterDbContext(builder.Configuration);
 
