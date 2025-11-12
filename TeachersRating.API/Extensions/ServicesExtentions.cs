@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TeachersRating.API.Data;
 using TeachersRating.API.Interfaces;
+using TeachersRating.API.Services;
 
 namespace TeachersRating.API.Extensions;
 
@@ -34,6 +35,13 @@ public static class ServicesExtentions
             .ToArray();
 
         services.TryAddEnumerable(serviceDescriptors);
+
+        return services;
+    }
+
+    public static IServiceCollection RegisterServices(this IServiceCollection services)
+    {
+        services.AddSingleton<IPresenceTrackerService, PresenceTrackerService>();
 
         return services;
     }

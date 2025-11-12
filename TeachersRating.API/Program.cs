@@ -3,15 +3,20 @@ using System.Diagnostics;
 using System.Text.Json.Serialization;
 using TeachersRating.API.Data;
 using TeachersRating.API.Extensions;
+using TeachersRating.API.Hubs;
 using TeachersRating.API.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 
+builder.Services.RegisterServices();
+
 builder.Services.RegisterDbContext(builder.Configuration);
 
 builder.Services.AddEndpoints(typeof(Program).Assembly);
+
+builder.Services.AddSignalR();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -81,6 +86,8 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+
+app.MapHub<PresenceHub>("/hubs/online");
 
 RouteGroupBuilder apiPrefixGroup = app.MapGroup("api");
 

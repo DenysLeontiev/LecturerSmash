@@ -1,0 +1,10 @@
+<div class="stats-container">
+  <div class="stats-card">
+    <h1 class="title">Онлайн користувачів</h1>
+    <div class="user-count">
+      <span class="count">{{presenceService.numberOfOnlineUsers$ | async}}</span>
+      <span class="label">користувачів <b>онлайн</b></span>
+    </div>
+    <button class="home-button" routerLink="/home">На головну</button>
+  </div>
+</div>
