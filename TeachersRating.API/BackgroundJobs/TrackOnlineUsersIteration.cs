@@ -11,8 +11,6 @@ public class TrackOnlineUsersIteration : IContinuousWorkIteration
     private readonly IPresenceTrackerService _presenceTracker;
     private readonly ILogger<TrackOnlineUsersIteration> _logger;
 
-    private int _lastRunHour = -1;
-
     public TrackOnlineUsersIteration(AppDbContext context,
         IPresenceTrackerService presenceTracker,
         ILogger<TrackOnlineUsersIteration> logger)

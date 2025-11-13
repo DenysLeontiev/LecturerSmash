@@ -124,4 +124,16 @@ public static class EntityMappingExtensions
             Url = photo.Url
         };
     }
+
+    public static UsersOnlineStatDto ToDto(this UsersOnlineStat usersOnlineStat)
+    {
+        return new UsersOnlineStatDto
+        {
+            Id = usersOnlineStat.Id,
+            NumberOfOnlineUsers = usersOnlineStat.NumberOfOnlineUsers,
+            DateCreated = usersOnlineStat.DateCreated,
+            DateModified = usersOnlineStat.DateModified,
+            IsDeleted = usersOnlineStat.IsDeleted
+        };
+    }
 }
