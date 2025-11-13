@@ -24,12 +24,12 @@ public class TrackOnlineUsersIteration : IContinuousWorkIteration
 
     public async Task Run(CancellationToken stoppingToken)
     {
+        int minutesAhead = 5;
+
         var now = DateTime.UtcNow;
-        var nextHour = now.AddHours(1).Date.AddHours(now.Hour + 1);
+        var nMinutesAhead = now.AddMinutes(minutesAhead);
 
-        var delay = nextHour - now;
-
-        _logger.LogInformation("Sleeping until next hour at {nextHour} (in {delay})", nextHour, delay);
+        TimeSpan delay = nMinutesAhead - now;
 
         await Task.Delay(delay, stoppingToken);
 
