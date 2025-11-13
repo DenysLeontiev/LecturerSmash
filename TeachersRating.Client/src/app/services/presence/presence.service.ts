@@ -22,7 +22,6 @@ export class PresenceService {
       .build();
 
     this.hubConnection.on('NumberOfOnlineUsersChanged', (numberOfOnlineUsers: number) => {
-      console.log('========== NumberOfOnlineUsersChanged ==========');
       this.numberOfOnlineUsersSource.next(numberOfOnlineUsers);
     });
 
@@ -43,7 +42,6 @@ export class PresenceService {
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
     
-    console.log('========== joined ==========');
     await this.hubConnection?.invoke("JoinAdminGroup");
   }
 

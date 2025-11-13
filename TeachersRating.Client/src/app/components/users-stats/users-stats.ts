@@ -19,6 +19,8 @@ import {
 import { UsersStatsService } from '../../services/users-stats/users-stats.service';
 import { UsersStats } from '../../models/users-stats.model';
 
+import { ApexTooltip } from "ng-apexcharts";
+
 export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -27,6 +29,7 @@ export type ChartOptions = {
   grid: ApexGrid;
   stroke: ApexStroke;
   title: ApexTitleSubtitle;
+  tooltip: ApexTooltip;
 };
 
 @Component({
@@ -82,7 +85,7 @@ export class UsersStatsComponent implements OnInit, OnDestroy {
         curve: "straight"
       },
       title: {
-        text: "Кількість користувачів онлайн за період",
+        text: "Графік користувачів онлайн",
         align: "left"
       },
       grid: {
@@ -134,7 +137,6 @@ export class UsersStatsComponent implements OnInit, OnDestroy {
   }
 
   private updateChart(stats: UsersStats[]) {
-    // Sort by date ascending
     const sortedStats = [...stats].sort((a, b) => 
       new Date(a.dateCreated).getTime() - new Date(b.dateCreated).getTime()
     );
@@ -158,6 +160,27 @@ export class UsersStatsComponent implements OnInit, OnDestroy {
       ],
       xaxis: {
         categories: categories
+      },
+      tooltip: {
+        custom: ({ series, seriesIndex, dataPointIndex, w }) => {
+          const stat = sortedStats[dataPointIndex];
+          const date = new Date(stat.dateCreated);
+          const formattedDate = date.toLocaleDateString('uk-UA', { 
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+          });
+          const formattedTime = date.toLocaleTimeString('uk-UA', {
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+          
+          return `<div style="padding: 10px; background: white; border: 1px solid #e0e0e0; border-radius: 4px;">
+            <div style="font-weight: 600; margin-bottom: 5px;">${formattedDate}</div>
+            <div style="color: #666; margin-bottom: 5px;">Час: ${formattedTime}</div>
+            <div style="color: #2196f3; font-weight: 600;">Користувачів: ${series[seriesIndex][dataPointIndex]}</div>
+          </div>`;
+        }
       }
     };
   }
