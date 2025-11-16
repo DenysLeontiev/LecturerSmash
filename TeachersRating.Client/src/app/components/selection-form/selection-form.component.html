@@ -21,7 +21,7 @@
         [disabled]="isLoading()" class="form-select">
         <option value="">Оберіть Інститут...</option>
         @for (institute of institutes(); track institute.id) {
-        <option [value]="institute.id">{{ institute.name }}</option>
+        <option [value]="institute.id">{{ institute.name | instituteRename }}</option>
         }
       </select>
     </div>

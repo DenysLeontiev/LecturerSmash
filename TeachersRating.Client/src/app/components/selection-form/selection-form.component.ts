@@ -5,11 +5,12 @@ import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { Institute } from '../../models/institute.model';
 import { Department } from '../../models/department.model';
+import { InstituteRenamePipe } from "../../pipes/institute-rename/institute-rename-pipe";
 
 @Component({
   selector: 'app-selection-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, InstituteRenamePipe],
   templateUrl: './selection-form.component.html',
   styleUrl: './selection-form.component.scss'
 })

@@ -6,10 +6,11 @@ import { Institute } from '../../models/institute.model';
 import { Department } from '../../models/department.model';
 import { Worker } from '../../models/worker.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { InstituteRenamePipe } from "../../pipes/institute-rename/institute-rename-pipe";
 
 @Component({
   selector: 'app-top-workers',
-  imports: [CommonModule, FontAwesomeModule, RouterLink],
+  imports: [CommonModule, FontAwesomeModule, RouterLink, InstituteRenamePipe],
   templateUrl: './top-workers.html',
   styleUrl: './top-workers.scss'
 })
