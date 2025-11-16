@@ -9,8 +9,7 @@ const institutesUrl: string = "https://lpnu.ua/institutes";
 
 const workersPageHref: string = '/kolektyv-pratsivnykiv-kafedry';
 
-const fileName: string = 'ouput.json';
-const defaultWorkerImagePlaceholder: string = "defphoto2";
+const fileName: string = 'ouput1.json';
 
 const institutes: Institute[] = [];
 const departments: Department[] = [];
